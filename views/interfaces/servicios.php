@@ -46,7 +46,7 @@ if (session_status() == PHP_SESSION_NONE) {
         
         <a href="reportes/reporte.php" class="easyui-linkbutton" iconCls="icon-ok" plain="true" target="_blank">Reporte</a>
         <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="reporte()" > Generar Reporte Especifico</a>
-        <a href="reportes/reporteireport.php" class="easyui-linkbutton" iconCls="icon-ok" plain="true" target="_blank">Ireport</a>
+        <!--<a href="reportes/reporteireport.php" class="easyui-linkbutton" iconCls="icon-ok" plain="true" target="_blank">Ireport</a>-->
     </div>
 
     <div id="dlg" class="easyui-dialog" style="width:400px" data-options="closed:true,modal:true,border:'thin',buttons:'#dlg-buttons'">
@@ -170,7 +170,7 @@ if (session_status() == PHP_SESSION_NONE) {
             var row = $('#dg').datagrid('getSelected');
             if (row) {
                 var cedula = row.estCedula;
-                window.open('reportes/reporteParametro.php?cedula=' + cedula, '_blank');
+                window.open('reportes/reporteparametro.php?cedula=' + cedula, '_blank');
             }
         }
     </script>

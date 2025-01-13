@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['cedula'])) {
     $conn = new Conexion();
     $con = $conn->conectar();
 
-    $sqlSelect = "SELECT 
+    $sqlSelect = "SELECT
         estudiantes.estCedula,
         estudiantes.estNombre,
         estudiantes.estApellido,
