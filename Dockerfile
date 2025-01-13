@@ -7,6 +7,8 @@ RUN a2enmod rewrite && docker-php-ext-install session
 # Establecer ServerName directamente en el Dockerfile
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
+#hol
+
 # Instalar la extensión mysqli y otras dependencias necesarias
 RUN apt-get update && apt-get install -y \
     libpng-dev \
