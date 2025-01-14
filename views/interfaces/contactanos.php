@@ -88,7 +88,7 @@
             <!-- Formulario a la derecha -->
             <div class="form-container">
                 <h2>Contáctanos</h2>
-                <form action="https://example.com/contact" method="POST">
+                <form action="https://formsubmit.co/edupunina12@gmail.com" method="POST">
                     <label for="nombre">Nombre completo:</label>
                     <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
 
@@ -101,8 +101,11 @@
                     <label for="mensaje">Mensaje:</label>
                     <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí..." rows="5"
                         required></textarea>
-
                     <button type="submit">Enviar mensaje</button>
+
+                    <input type="hidden" name="_next"
+                        value="https://reportesvisual.onrender.com/index.php?action=contactanos"><!--  Colocar en value a donde seu quiere redirigir -->
+                    <input type="hidden" name="_captcha" value="false">
                 </form>
             </div>
             <!-- Mapa a la izquierda -->
