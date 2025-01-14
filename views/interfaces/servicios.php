@@ -33,7 +33,6 @@ if (session_status() == PHP_SESSION_NONE) {
     </table>
 
     <div id="toolbar">
-        <!-- Verifica si el usuario está autenticado -->
         <?php if(isset($_SESSION['usuario'])) { ?>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">Nuevo Estudiante</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Editar Estudiante</a>
@@ -43,26 +42,28 @@ if (session_status() == PHP_SESSION_NONE) {
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="alertLogin()">Editar Estudiante</a>
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="alertLogin()">Borrar Estudiante</a>
         <?php } ?>
-        
         <a href="reportes/reporte.php" class="easyui-linkbutton" iconCls="icon-ok" plain="true" target="_blank">Reporte</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="reporte()" > Generar Reporte Especifico</a>
-        <!--<a href="reportes/reporteireport.php" class="easyui-linkbutton" iconCls="icon-ok" plain="true" target="_blank">Ireport</a>-->
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" plain="true" onclick="reporte()">Generar Reporte Especifico</a>
     </div>
 
     <div id="dlg" class="easyui-dialog" style="width:400px" data-options="closed:true,modal:true,border:'thin',buttons:'#dlg-buttons'">
         <form id="fm" method="post" novalidate style="margin:0;padding:20px 50px">
             <h3>Registro Estudiante</h3>
             <div style="margin-bottom:10px">
-                <input id="idcedula" name="cedula" class="easyui-textbox" required="true" label="Cedula:" style="width:100%" >
+                <input id="idcedula" name="cedula" class="easyui-textbox" required="true" label="Cedula:" style="width:100%" 
+                       validType="cedulaValido">
             </div>
             <div style="margin-bottom:10px">
-                <input name="nombre" class="easyui-textbox" required="true" label="Nombre:" style="width:100%">
+                <input name="nombre" class="easyui-textbox" required="true" label="Nombre:" style="width:100%" 
+                       validType="customName">
             </div>
             <div style="margin-bottom:10px">
-                <input name="apellido" class="easyui-textbox" required="true" label="Apellido:" style="width:100%">
+                <input name="apellido" class="easyui-textbox" required="true" label="Apellido:" style="width:100%" 
+                       validType="customName">
             </div>
             <div style="margin-bottom:10px">
-                <input name="telefono" class="easyui-textbox" required="true" label="Telefono:" style="width:100%">
+                <input name="telefono" class="easyui-textbox" required="true" label="Telefono:" style="width:100%" 
+                       validType="digits">
             </div>
             <div style="margin-bottom:10px">
                 <input name="direccion" class="easyui-textbox" required="true" label="Direccion:" style="width:100%">
@@ -77,35 +78,56 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <script type="text/javascript">
         var url;
-        
+
+        // Extensiones para validaciones personalizadas
+        $.extend($.fn.validatebox.defaults.rules, {
+            digits: {
+                validator: function(value) {
+                    return /^\d+$/.test(value);
+                },
+                message: 'Este campo solo acepta números.'
+            },
+            customName: {
+                validator: function(value) {
+                    return /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value);
+                },
+                message: 'Este campo solo acepta letras.'
+            },
+            cedulaValido: {
+                validator: function(value) {
+                    return /^\d{10}$/.test(value);
+                },
+                message: 'La cédula debe tener exactamente 10 dígitos numéricos.'
+            }
+        });
+
         function alertLogin() {
             $.messager.confirm('Error', 'Debe iniciar sesión para realizar esta acción.', function(r) {
                 if (r) {
-                    window.location.href = './views/interfaces/login.php'; // Redirige al login
+                    window.location.href = './views/interfaces/login.php';
                 }
             });
         }
 
-        function newUser(){
+        function newUser() {
             <?php if(!isset($_SESSION['usuario'])) { ?>
                 alertLogin();
                 return;
             <?php } ?>
-            $('#dlg').dialog('open').dialog('center').dialog('setTitle','Nuevo Estudiante');
+            $('#dlg').dialog('open').dialog('center').dialog('setTitle', 'Nuevo Estudiante');
             $('#fm').form('clear');
             $('#idcedula').textbox('readonly', false);
             url = 'models/guardar.php';
         }
 
-        function editUser(){
+        function editUser() {
             <?php if(!isset($_SESSION['usuario'])) { ?>
                 alertLogin();
                 return;
             <?php } ?>
             var row = $('#dg').datagrid('getSelected');
-            if (row){
-                $('#dlg').dialog('open').dialog('center').dialog('setTitle','Editar Estudiante');
-                
+            if (row) {
+                $('#dlg').dialog('open').dialog('center').dialog('setTitle', 'Editar Estudiante');
                 var formData = {
                     cedula: row.estCedula,
                     nombre: row.estNombre,
@@ -113,47 +135,45 @@ if (session_status() == PHP_SESSION_NONE) {
                     direccion: row.estDireccion,
                     telefono: row.estTelefono
                 };
-
                 $('#fm').form('load', formData);
-
                 $('#idcedula').textbox('readonly', true);
                 url = 'models/editar.php?cedula=' + row.estCedula;
             }
         }
 
-        function destroyUser(){
+        function destroyUser() {
             <?php if(!isset($_SESSION['usuario'])) { ?>
                 alertLogin();
                 return;
             <?php } ?>
             var row = $('#dg').datagrid('getSelected');
-            if (row){
-                $.messager.confirm('Confirm','¿Seguro que quieres borrar?',function(r){
-                    if (r){
-                        $.post('models/borrar.php',{cedula:row.estCedula},function(result){
-                            if (!result.success){
-                                $('#dg').datagrid('reload'); // recarga los datos
+            if (row) {
+                $.messager.confirm('Confirm', '¿Seguro que quieres borrar?', function(r) {
+                    if (r) {
+                        $.post('models/borrar.php', {cedula: row.estCedula}, function(result) {
+                            if (!result.success) {
+                                $('#dg').datagrid('reload');
                             } else {
-                                $.messager.show({ // muestra el mensaje de error
+                                $.messager.show({
                                     title: 'Error',
                                     msg: result.errorMsg
                                 });
                             }
-                        },'json');
+                        }, 'json');
                     }
                 });
             }
         }
 
-        function saveUser(){
-            $('#fm').form('submit',{
+        function saveUser() {
+            $('#fm').form('submit', {
                 url: url,
-                onSubmit: function(){
+                onSubmit: function() {
                     return $(this).form('validate');
                 },
-                success: function(result){
-                    var result = eval('('+result+')');
-                    if (result.errorMsg){
+                success: function(result) {
+                    var result = eval('(' + result + ')');
+                    if (result.errorMsg) {
                         $.messager.show({
                             title: 'Error',
                             msg: result.errorMsg
